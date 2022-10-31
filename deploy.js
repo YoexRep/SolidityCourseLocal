@@ -7,6 +7,7 @@ require("dotenv").config();
 
 async function main() {
   //Puedo usar variables de ENV para evitar poner nuestras llaves en el codigo directamente.
+  //Con .gitignore, evito subir los archivos .env
   let provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
   let wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
