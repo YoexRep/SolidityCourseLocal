@@ -9,20 +9,20 @@ async function main() {
   //Puedo usar variables de ENV para evitar poner nuestras llaves en el codigo directamente.
   //Con .gitignore, evito subir los archivos .env
   let provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
-  //let wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  let wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
   //leo el archivo encriptado con mi clave primaria
   const encryptedJson = fs.readFileSync("./.encryptedKey.json", "utf8");
 
   //Creo una wallet que lea de un archivo encriptado el cual recibe la clave y la contraseña al momento de desploy
 
-  let wallet = new ethers.Wallet.fromEncryptedJsonSync(
+  /*let wallet = new ethers.Wallet.fromEncryptedJsonSync(
     encryptedJson,
     process.env.PRIVATE_KEY_PASSWORD
-  );
+  );*/
 
-  //Le paso el provider a mi wallet, de esta manera porque estaba leyendo desde un archivo encriptado
-  wallet = await wallet.connect(provider);
+  //Me conecto al provider en este caso la blockchain local
+  // wallet = await wallet.connect(provider);
 
   const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8");
 
@@ -33,6 +33,9 @@ async function main() {
   const contractFactory = new ethers.ContractFactory(abi, binary, wallet);
   console.log("Deploying, please wait...");
   const contract = await contractFactory.deploy();
+  await contract.deployTransaction.wait(1);
+
+  console.log(`Contract address: ${contract.address}`);
 
   //para interactuar con los metodos de mi contrato, como hacia en remix
 
